@@ -19,22 +19,24 @@ class RandomChar extends Component {
   }
 
   updateChar = () => {
-    const id = Math.floor(Math.random() * 19);
+    const id = Math.floor(Math.random() * 19) + 1;
     this.marvelService
       .getCharacter(id)
       .then(this.onCharLoader)
   }
 
   editDescription = (description) => {
-    if (!description) return "Описание пока не добавили...";
-    if (description.trim().length > 40) return description.slice(0, 40) + '...';
+    if (!description) return "No description yet...";
+
+    return (description.trim().length > 140)
+      ? description.slice(0, 140) + '...'
+      : description
   }
 
   render() {
     const {char: {name, description, homepage, thumbnail, wiki}} = this.state;
 
-    let desc = description;
-    desc = this.editDescription(desc);
+    let desc = this.editDescription(description);
 
     return (
       <div className="randomchar">
