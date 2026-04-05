@@ -24,6 +24,14 @@ class RandomChar extends Component {
     // clearInterval(this.timerId);
   }
 
+  updateChar = () => {
+    const id = Math.floor(Math.random() * 18) + 2;
+    this.marvelService
+      .getCharacter(id)
+      .then(this.onCharLoader)
+      .catch(this.onError);
+  }
+
   onError = () => {
     this.setState({loading: false, error: true});
   }
@@ -37,13 +45,6 @@ class RandomChar extends Component {
     img.src = char.thumbnail;
   }
 
-  updateChar = () => {
-    const id = Math.floor(Math.random() * 19) + 1;
-    this.marvelService
-      .getCharacter(id)
-      .then(this.onCharLoader)
-      .catch(this.onError);
-  }
 
   render() {
     const {char, loading, error} = this.state;
@@ -81,9 +82,9 @@ class RandomChar extends Component {
 const View = ({char}) => {
   const {name, description, homepage, thumbnail, wiki} = char;
 
-  let imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-    ? {'objectFit': 'cover'}
-    : {'objectFit': 'contain'};
+  const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
+    ? {'objectFit': 'contain'}
+    : {'objectFit': 'cover'};
 
   const editDescription = (description) => {
     if (!description) return "No description yet...";
@@ -94,6 +95,7 @@ const View = ({char}) => {
   }
 
   const desc = editDescription(description);
+
 
   return (
     <div className="randomchar__block">
