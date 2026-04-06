@@ -10,7 +10,7 @@ const CharListItem = (props) => {
     : {'objectFit': 'cover'};
 
   return (
-    <li className="char__item">
+    <li className="char__item" onClick={props.onClick}>
       <img src={noIronManImage} alt={thumbnail} style={imgStyle}/>
       <div className="char__name">{name}</div>
     </li>

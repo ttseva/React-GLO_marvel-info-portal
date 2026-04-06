@@ -39,7 +39,7 @@ class CharList extends Component {
     const limit = 9;
 
     const listChars = chars.slice(0, limit).map((char) => (
-      <CharListItem char={char} key={char.id}/>
+      <CharListItem char={char} key={char.id} onClick={() => this.props.onCharSelected(char.id)}/>
     ));
 
     const errorMsg = error ? <ErrorMessage/> : null;

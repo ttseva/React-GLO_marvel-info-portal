@@ -17,18 +17,13 @@ class RandomChar extends Component {
 
   componentDidMount() {
     this.updateChar();
-    // this.timerId = setInterval(this.updateChar, 3000)
-  }
-
-  componentWillUnmount() {
-    // clearInterval(this.timerId);
   }
 
   updateChar = () => {
     const id = Math.floor(Math.random() * 18) + 2;
     this.marvelService
       .getCharacter(id)
-      .then(this.onCharLoader)
+      .then(this.onCharLoaded)
       .catch(this.onError);
   }
 
@@ -36,12 +31,10 @@ class RandomChar extends Component {
     this.setState({loading: false, error: true});
   }
 
-  onCharLoader = (char) => {
+  onCharLoaded = (char) => {
     let img = new Image();
 
-    img.onload = () => {
-      this.setState({char, loading: false});
-    };
+    img.onload = () => this.setState({char, loading: false});
     img.src = char.thumbnail;
   }
 
@@ -49,7 +42,7 @@ class RandomChar extends Component {
     const {char, loading, error} = this.state;
 
     const errorMsg = error ? <ErrorMessage/> : null;
-    const spinner = (loading) ? <Spinner/> : null;
+    const spinner = loading ? <Spinner/> : null;
     const content = !(loading || error) ? <View char={char}/> : null;
 
     return (
