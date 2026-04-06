@@ -45,7 +45,6 @@ class RandomChar extends Component {
     img.src = char.thumbnail;
   }
 
-
   render() {
     const {char, loading, error} = this.state;
 

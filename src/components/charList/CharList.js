@@ -21,7 +21,7 @@ class CharList extends Component {
 
   updateChars = () => {
     this.marvelService
-      .getNineCharacters()
+      .getAllCharacters()
       .then(this.onCharsLoader)
       .catch(this.onError);
   }
@@ -36,8 +36,9 @@ class CharList extends Component {
 
   render() {
     const {chars, loading, error} = this.state;
+    const limit = 9;
 
-    const listChars = chars.map((char) => (
+    const listChars = chars.slice(0, limit).map((char) => (
       <CharListItem char={char} key={char.id}/>
     ));
 
