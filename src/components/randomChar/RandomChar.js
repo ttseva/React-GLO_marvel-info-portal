@@ -20,7 +20,7 @@ class RandomChar extends Component {
   }
 
   updateChar = () => {
-    const id = Math.floor(Math.random() * 18) + 2;
+    const id = Math.floor(Math.random() * 20) + 2;
     this.marvelService
       .getCharacter(id)
       .then(this.onCharLoaded)
