@@ -10,9 +10,10 @@ class CharList extends Component {
     chars: [],
     loading: true,
     error: false,
-    newItemLoading: false,
+    // newItemLoading: false,
     offset: 0,
-    outOfChars: false,
+    limit: +localStorage.getItem('limit') || 9,
+    // outOfChars: false,
   }
 
   marvelService = new MarvelService();
@@ -26,11 +27,14 @@ class CharList extends Component {
     window.removeEventListener("scroll", this.onScroll);
   }
 
-  onRequest = (offset) => {
+  onRequest = (offset, limit) => {
     this.onCharListLoading()
 
+
+
     this.marvelService
-      .getAllCharacters(offset, 10)
+      // .getAllCharacters(offset, limit)
+      .getAllCharacters(0, limit)
       .then(this.onCharListLoaded)
       .catch(this.onError);
   }
@@ -49,20 +53,24 @@ class CharList extends Component {
   }
 
   onCharListLoaded = (newChars) => {
-    let ended = false;
-    if (newChars.length <= 9) ended = true;
+    // let ended = false;
+    // if (newChars.length <= 9) ended = true;
 
-    this.setState(({offset, chars}) => ({
-      chars: [...chars, ...newChars.slice(0, 9)],
+    // localstorage.setItem('limit', this.state.limit)
+    this.setState(({offset, chars, limit}) => ({
+      chars: [...newChars],
       loading: false,
-      newItemLoading: false,
-      offset: offset + 9,
-      outOfChars: ended
+      limit: limit,
+
+      // newItemLoading: false,
+      // chars: [...chars, ...newChars.slice(0, 9)],
+      // offset: offset + 9,
+      // outOfChars: ended,
     }))
   };
 
   render() {
-    const {chars, loading, error, newItemLoading, offset, outOfChars} = this.state;
+    const {chars, loading, error} = this.state;
 
     const listChars = chars.map((char) => (
       <CharListItem char={char} key={char.id} onClick={() => this.props.onCharSelected(char.id)}/>
@@ -77,13 +85,13 @@ class CharList extends Component {
         {errorMsg}
         {spinner}
         {content}
-        <button
-          className="button button__main button__long"
-          disabled={newItemLoading}
-          style={{'display': outOfChars ? 'none' : 'block'}}
-          onClick={() => this.onRequest(offset)}>
-          <div className="inner">load more</div>
-        </button>
+        {/*<button*/}
+        {/*  className="button button__main button__long"*/}
+        {/*  disabled={newItemLoading}*/}
+        {/*  style={{'display': outOfChars ? 'none' : 'block'}}*/}
+        {/*  onClick={() => this.onRequest(offset)}>*/}
+        {/*  <div className="inner">load more</div>*/}
+        {/*</button>*/}
       </div>
     )
   }
