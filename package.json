@@ -2,7 +2,7 @@
   "name": "marvel",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://ttseva.github.io/marvel-catalogue",
+  "homepage": "https://ttseva.github.io/React-GLO_marvel-info-portal",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^11.2.7",
