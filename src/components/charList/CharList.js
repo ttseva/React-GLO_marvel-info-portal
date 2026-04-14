@@ -1,9 +1,13 @@
-import './charList.scss';
-import {Component} from "react";
+import React, {Component} from "react";
+import PropTypes from "prop-types";
+
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import CharListItem from "../charListItem/CharListItem";
+
+import './charList.scss';
+
 
 class CharList extends Component {
   state = {
@@ -19,11 +23,6 @@ class CharList extends Component {
 
   componentDidMount() {
     this.onRequest();
-    window.addEventListener("scroll", this.onScroll);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.onScroll);
   }
 
   onRequest = (offset) => {
@@ -65,7 +64,11 @@ class CharList extends Component {
     const {chars, loading, error, newItemLoading, offset, outOfChars} = this.state;
 
     const listChars = chars.map((char) => (
-      <CharListItem char={char} key={char.id} onClick={() => this.props.onCharSelected(char.id)}/>
+      <CharListItem
+        char={char}
+        key={char.id}
+        onChoose={() => this.props.onCharSelected(char.id)}
+        isSelected={this.props.selectedChar === char.id}/>
     ));
 
     const errorMsg = error ? <ErrorMessage/> : null;
@@ -88,5 +91,11 @@ class CharList extends Component {
     )
   }
 }
+
+
+CharList.propTypes = {
+  onCharSelected: PropTypes.func.isRequired,
+}
+
 
 export default CharList;
