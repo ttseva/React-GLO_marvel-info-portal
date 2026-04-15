@@ -1,11 +1,7 @@
 const CharListItem = (props) => {
-  const {name, thumbnail, id} = props.char;
+  const {name, thumbnail} = props.char;
 
-  let noIronManImage = id === 1
-    ? 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-    : thumbnail
-
-  const imgStyle = noIronManImage === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
+  const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
     ? {'objectFit': 'contain'}
     : {'objectFit': 'cover'}
   ;
@@ -18,7 +14,7 @@ const CharListItem = (props) => {
         onClick={props.onChoose}
         onFocus={props.onChoose}
         tabIndex={0}>
-      <img src={noIronManImage} alt={thumbnail} style={imgStyle}/>
+      <img src={thumbnail} alt={thumbnail} style={imgStyle}/>
       <div className="char__name">{name}</div>
     </li>
   )

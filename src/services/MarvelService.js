@@ -5,7 +5,7 @@ const useMarvelService = () => {
 
    const _apiBase = 'https://marvel-server-zeta.vercel.app/';
    const _apiKey = 'apikey=d4eecb0c66dedbfae4eab45d312fc1df';
-   const _baseOffset = 0;
+   const _baseOffset = 1;
    const _baseLimit = 9;
 
   const getAllCharacters = async (offset = _baseOffset, limit = _baseLimit) => {

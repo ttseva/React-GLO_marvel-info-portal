@@ -15,7 +15,7 @@ const RandomChar = props => {
   }, [])
 
   const updateChar = () => {
-    const id = Math.floor(Math.random() * 20) + 2;
+    const id = Math.floor(Math.random() * 19) + 2;
 
     getCharacter(id)
       .then(onCharLoaded);
@@ -23,10 +23,7 @@ const RandomChar = props => {
 
   const onCharLoaded = (char) => {
     let img = new Image();
-
-    img.onload = () => {
-      setChar(char);
-    };
+    img.onload = () => setChar(char);
     img.src = char.thumbnail;
   }
 
@@ -48,7 +45,6 @@ const RandomChar = props => {
           Or choose another one
         </p>
         <button className="button button__main" onClick={() => {
-          // setLoading(true);
           updateChar()
         }}>
           <div className="inner">try it</div>
