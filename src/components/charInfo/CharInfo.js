@@ -1,4 +1,4 @@
-import {Component} from "react";
+import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 
 import Spinner from "../spinner/Spinner";
@@ -8,54 +8,45 @@ import MarvelService from "../../services/MarvelService";
 import './charInfo.scss';
 
 
-class CharInfo extends Component {
-  state = {
-    char: null,
-    loading: false,
-    error: false,
-  }
+const CharInfo = (props) => {
 
-  marvelService = new MarvelService();
+  const [char, setChar] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
-  componentDidMount() {
-    this.updateChar();
-  }
+  const marvelService = new MarvelService();
 
-  componentDidUpdate(prevProps) {
-    if (this.props.charId !== prevProps.charId) {
-      this.updateChar();
-    }
-  }
+  useEffect(() => {
+    updateChar();
+  }, [props.charId])
 
-  updateChar = () => {
-    const {charId} = this.props;
+  const updateChar = () => {
+    const {charId} = props;
     if (!charId) return;
     if (charId === 1) {
-      this.onError();
+      onError();
       return;
     }
 
-    this.setState({loading: true, error: false});
-    this.marvelService
+    setLoading(true);
+    setError(false);
+    marvelService
       .getCharacter(charId)
-      .then(this.onCharLoaded)
-      .catch(this.onError);
+      .then(onCharLoaded)
+      .catch(onError);
   }
 
-  onError = () => {
-    this.setState({loading: false, error: true});
+  const onError = () => {
+    setLoading(false);
+    setError(true);
   }
 
-  onCharLoaded = (char) => {
+  const onCharLoaded = (char) => {
     let img = new Image();
 
-    img.onload = () => this.setState({char, loading: false});
+    img.onload = () => {setChar(char); setLoading(false)};
     img.src = char.thumbnail;
   }
-
-
-  render() {
-    const {char, loading, error} = this.state;
 
     const skeleton = char || loading || error ? null : <Skeleton/>;
     const errorMsg = error ? <ErrorMessage/> : null;
@@ -70,7 +61,6 @@ class CharInfo extends Component {
         {content}
       </div>
     )
-  }
 }
 
 const View = ({char}) => {
