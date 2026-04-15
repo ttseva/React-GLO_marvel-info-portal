@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -9,87 +9,76 @@ import CharListItem from "../charListItem/CharListItem";
 import './charList.scss';
 
 
-class CharList extends Component {
-  state = {
-    chars: [],
-    loading: true,
-    error: false,
-    newItemLoading: false,
-    offset: 0,
-    outOfChars: false,
-  }
+const CharList = (props) => {
 
-  marvelService = new MarvelService();
+  const [chars, setChars] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [newItemLoading, setNewItemLoading] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [outOfChars, setOutOfChars] = useState(false);
 
-  componentDidMount() {
-    this.onRequest();
-  }
+  const marvelService = new MarvelService();
 
-  onRequest = (offset) => {
-    this.onCharListLoading()
+  useEffect(() => {
+    onRequest();
+  }, [])
 
-    this.marvelService
+  const onRequest = (offset) => {
+    onCharListLoading()
+
+    marvelService
       .getAllCharacters(offset, 10)
-      .then(this.onCharListLoaded)
-      .catch(this.onError);
+      .then(onCharListLoaded)
+      .catch(onError);
   }
 
-  onCharListLoading = () => {
-    this.setState({
-      newItemLoading: true,
-    })
-  }
-
-  onError = () => {
-    this.setState({
-      loading: false,
-      error: true
-    });
-  }
-
-  onCharListLoaded = (newChars) => {
+  const onCharListLoaded = (newChars) => {
     let ended = false;
     if (newChars.length <= 9) ended = true;
 
-    this.setState(({offset, chars}) => ({
-      chars: [...chars, ...newChars.slice(0, 9)],
-      loading: false,
-      newItemLoading: false,
-      offset: offset + 9,
-      outOfChars: ended
-    }))
+    setChars(() => [...chars, ...newChars.slice(0, 9)]);
+    setLoading(false);
+    setNewItemLoading(false);
+    setOffset(offset => offset + 9);
+    setOutOfChars(ended);
   };
 
-  render() {
-    const {chars, loading, error, newItemLoading, offset, outOfChars} = this.state;
-
-    const listChars = chars.map((char) => (
-      <CharListItem
-        char={char}
-        key={char.id}
-        onChoose={() => this.props.onCharSelected(char.id)}
-        isSelected={this.props.selectedChar === char.id}/>
-    ));
-
-    const errorMsg = error ? <ErrorMessage/> : null;
-    const spinner = (loading) ? <Spinner/> : null;
-    const content = !(loading || error) ? <ul className="char__grid">{listChars}</ul> : null;
-
-    return (
-      <div className="char__list">
-        {errorMsg}
-        {spinner}
-        {content}
-        <button
-          className="button button__main button__long"
-          disabled={newItemLoading}
-          style={{'display': outOfChars ? 'none' : 'block'}}
-          onClick={() => this.onRequest(offset)}>
-          <div className="inner">load more</div>
-        </button>
-      </div>
-    )
+  const onCharListLoading = () => {
+    setNewItemLoading(true);
   }
+
+  const onError = () => {
+    setError(true);
+    setLoading(false);
+  }
+
+  const listChars = chars.map((char) => (
+    <CharListItem
+      char={char}
+      key={char.id}
+      onChoose={() => props.onCharSelected(char.id)}
+      isSelected={props.selectedChar === char.id}/>
+  ));
+
+  const errorMsg = error ? <ErrorMessage/> : null;
+  const spinner = (loading) ? <Spinner/> : null;
+  const content = !(loading || error) ? <ul className="char__grid">{listChars}</ul> : null;
+
+  return (
+    <div className="char__list">
+      {errorMsg}
+      {spinner}
+      {content}
+      <button
+        className="button button__main button__long"
+        disabled={newItemLoading}
+        style={{'display': outOfChars ? 'none' : 'block'}}
+        onClick={() => onRequest(offset)}>
+        <div className="inner">load more</div>
+      </button>
+    </div>
+  )
 }
 
 
