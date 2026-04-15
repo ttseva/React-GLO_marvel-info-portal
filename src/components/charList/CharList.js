@@ -7,6 +7,7 @@ import Spinner from "../spinner/Spinner";
 import CharListItem from "../charListItem/CharListItem";
 
 import './charList.scss';
+import useMarvelService from "../../services/MarvelService";
 
 
 const CharList = (props) => {
@@ -18,7 +19,7 @@ const CharList = (props) => {
   const [offset, setOffset] = useState(0);
   const [outOfChars, setOutOfChars] = useState(false);
 
-  const marvelService = new MarvelService();
+  const marvelService = useMarvelService();
 
   useEffect(() => {
     onRequest();
