@@ -1,12 +1,12 @@
 import {useHttp} from "../hooks/http.hook";
 
 const useMarvelService = () => {
-  const {loading, request, error} = useHttp();
+  const {loading, request, error, clearError} = useHttp();
 
-   const _apiBase = 'https://marvel-server-zeta.vercel.app/';
-   const _apiKey = 'apikey=d4eecb0c66dedbfae4eab45d312fc1df';
-   const _baseOffset = 1;
-   const _baseLimit = 9;
+  const _apiBase = 'https://marvel-server-zeta.vercel.app/';
+  const _apiKey = 'apikey=d4eecb0c66dedbfae4eab45d312fc1df';
+  const _baseOffset = 0;
+  const _baseLimit = 9;
 
   const getAllCharacters = async (offset = _baseOffset, limit = _baseLimit) => {
     const res = await request(`${_apiBase}characters?limit=${limit}&offset=${offset}&${_apiKey}`);
@@ -16,6 +16,16 @@ const useMarvelService = () => {
   const getCharacter = async (id) => {
     const res = await request(`${_apiBase}characters/${id}?&${_apiKey}`);
     return _transformCharacter(res.data.results[0])
+  }
+
+  const getAllComics = async (offset = _baseOffset, limit = _baseLimit) => {
+    const res = await request(`${_apiBase}comics?limit=${limit}&offset=${offset}&${_apiKey}`);
+    return res.data.results.map(_transformComic)
+  }
+
+  const getComic = async (id) => {
+    const res = await request(`${_apiBase}comics/${id}?&${_apiKey}`);
+    return _transformComic(res.data.results[0])
   }
 
   const _transformCharacter = (char) => {
@@ -30,7 +40,19 @@ const useMarvelService = () => {
     }
   }
 
-  return {loading, error, getAllCharacters, getCharacter}
+  const _transformComic = (comic) => {
+    return {
+      id: comic.id,
+      title: comic.title,
+      description: comic.description,
+      pageCount: comic.pageCount,
+      thumbnail: comic.thumbnail.path + '.' + comic.thumbnail.extension,
+      languages: comic.textObjects.languages,
+      price: comic.prices[0].price,
+    }
+  }
+
+  return {loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComic}
 }
 
 export default useMarvelService;

@@ -1,11 +1,13 @@
 import {useState} from "react";
 import AppHeader from "../appHeader/AppHeader";
+import AppBanner from "../appBanner/AppBanner";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 import decoration from '../../resources/img/vision.png';
+import ComicsList from "../comicsList/ComicsList";
 
 const App = () => {
   const [selectedChar, setChar] = useState(null);
@@ -14,22 +16,24 @@ const App = () => {
     setChar(id);
   }
 
-
   return (
     <div className="app">
       <AppHeader/>
       <main>
+        <AppBanner/>
         <ErrorBoundary>
-          <RandomChar/>
-          <div className="char__content">
-            <ErrorBoundary>
-              <CharList onCharSelected={onCharSelected} selectedChar={selectedChar}/>
-            </ErrorBoundary>
-            <ErrorBoundary>
-              <CharInfo charId={selectedChar}/>
-            </ErrorBoundary>
-          </div>
-          <img className="bg-decoration" src={decoration} alt="vision"/>
+         <ComicsList/>
+
+          {/*<RandomChar/>*/}
+          {/*<div className="char__content">*/}
+          {/*  <ErrorBoundary>*/}
+          {/*    <CharList onCharSelected={onCharSelected} selectedChar={selectedChar}/>*/}
+          {/*  </ErrorBoundary>*/}
+          {/*  <ErrorBoundary>*/}
+          {/*    <CharInfo charId={selectedChar}/>*/}
+          {/*  </ErrorBoundary>*/}
+          {/*</div>*/}
+          {/*<img className="bg-decoration" src={decoration} alt="vision"/>*/}
         </ErrorBoundary>
       </main>
     </div>

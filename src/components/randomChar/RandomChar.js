@@ -8,23 +8,27 @@ import useMarvelService from "../../services/MarvelService";
 
 const RandomChar = props => {
   const [char, setChar] = useState({});
-  const {loading, error, getCharacter} = useMarvelService();
+  const {loading, error, getCharacter, clearError} = useMarvelService();
 
   useEffect(() => {
     updateChar();
+
+    const intervalId = setInterval(updateChar, 60000);
+    return () => {
+      clearInterval(intervalId);
+    }
   }, [])
 
   const updateChar = () => {
-    const id = Math.floor(Math.random() * 19) + 2;
+    clearError();
 
+    const id = Math.floor(Math.random() * 20) + 2;
     getCharacter(id)
       .then(onCharLoaded);
   }
 
   const onCharLoaded = (char) => {
-    let img = new Image();
-    img.onload = () => setChar(char);
-    img.src = char.thumbnail;
+    setChar(char)
   }
 
   const errorMsg = error ? <ErrorMessage/> : null;

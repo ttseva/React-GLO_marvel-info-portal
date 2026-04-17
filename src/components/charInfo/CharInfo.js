@@ -11,7 +11,7 @@ import './charInfo.scss';
 const CharInfo = (props) => {
   const [char, setChar] = useState(null);
 
-  const {error, loading, getCharacter} = useMarvelService();
+  const {error, loading, getCharacter, clearError} = useMarvelService();
 
   useEffect(() => {
     updateChar();
@@ -20,15 +20,13 @@ const CharInfo = (props) => {
   const updateChar = () => {
     const {charId} = props;
     if (!charId) return;
-
+    clearError();
     getCharacter(charId)
       .then(onCharLoaded)
   }
 
   const onCharLoaded = (char) => {
-    let img = new Image();
-    img.onload = () => {setChar(char)};
-    img.src = char.thumbnail;
+    setChar(char);
   }
 
     const skeleton = char || loading || error ? null : <Skeleton/>;
