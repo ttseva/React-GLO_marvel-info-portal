@@ -8,7 +8,7 @@ import CharListItem from "../charListItem/CharListItem";
 
 import './charList.scss';
 
-
+const CHARS_PER_PAGE = 9;
 const CharList = (props) => {
   const [chars, setChars] = useState([]);
   const [newItemLoading, setNewItemLoading] = useState(false);
@@ -23,17 +23,17 @@ const CharList = (props) => {
 
   const onRequest = (offset, initial) => {
     initial ? setNewItemLoading(false) : setNewItemLoading(true);
-    getAllCharacters(offset, 10)
+    getAllCharacters(offset, CHARS_PER_PAGE + 1)
       .then(onCharListLoaded)
   }
 
   const onCharListLoaded = (newChars) => {
     let ended = false;
-    if (newChars.length <= 9) ended = true;
+    if (newChars.length <= CHARS_PER_PAGE) ended = true;
 
-    setChars(() => [...chars, ...newChars.slice(0, 9)]);
+    setChars(() => [...chars, ...newChars.slice(0, CHARS_PER_PAGE)]);
     setNewItemLoading(false);
-    setOffset(offset => offset + 9);
+    setOffset(offset => offset + CHARS_PER_PAGE);
     setOutOfChars(ended);
   };
 

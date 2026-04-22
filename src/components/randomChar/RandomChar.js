@@ -6,6 +6,8 @@ import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png'
 import useMarvelService from "../../services/MarvelService";
 
+const MAX_CHAR_ID = 20;
+
 const RandomChar = props => {
   const [char, setChar] = useState({});
   const {loading, error, getCharacter, clearError} = useMarvelService();
@@ -22,7 +24,7 @@ const RandomChar = props => {
   const updateChar = () => {
     clearError();
 
-    const id = Math.floor(Math.random() * 20) + 2;
+    const id = Math.floor(Math.random() * MAX_CHAR_ID) + 2;
     getCharacter(id)
       .then(onCharLoaded);
   }

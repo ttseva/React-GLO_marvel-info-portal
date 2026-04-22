@@ -7,10 +7,11 @@ import Spinner from "../spinner/Spinner";
 
 import './comicsList.scss';
 
-const ComicsList = () => {
-  const comicsLimit = 8;
+const COMICS_PER_PAGE = 8;
 
-  const {loading, error, getAllComics, clearError} = useMarvelService()
+const ComicsList = () => {
+
+  const {loading, error, getAllComics} = useMarvelService()
   const [offset, setOffset] = useState(0);
   const [comics, setComics] = useState([]);
   const [isEnded, setIsEnded] = useState(false);
@@ -22,10 +23,10 @@ const ComicsList = () => {
   }
 
   const onNewComics = (newComics) => {
-    if (newComics.length <= comicsLimit) setIsEnded(true);
+    if (newComics.length <= COMICS_PER_PAGE) setIsEnded(true);
 
-    setComics(comics => [...comics, ...newComics.slice(0, comicsLimit)]);
-    setOffset(offset => offset + comicsLimit);
+    setComics(comics => [...comics, ...newComics.slice(0, COMICS_PER_PAGE)]);
+    setOffset(offset => offset + COMICS_PER_PAGE);
 
     return getNewList();
   }

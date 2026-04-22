@@ -1,19 +1,23 @@
 import {useEffect, useState} from "react";
-import PropTypes from "prop-types";
+import {NavLink} from "react-router-dom";
 
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import Skeleton from "../skeleton/Skeleton";
 import useMarvelService from "../../services/MarvelService";
+
 import './charInfo.scss';
 
+const COMICS_AMOUNT = 21
 
 const CharInfo = (props) => {
   const [char, setChar] = useState(null);
+  const [allComics, setAllComics] = useState([]);
 
-  const {error, loading, getCharacter, clearError} = useMarvelService();
+  const {error, loading, getCharacter, getAllComics, clearError} = useMarvelService();
 
   useEffect(() => {
+    updateComics()
     updateChar();
   }, [props.charId])
 
@@ -25,32 +29,60 @@ const CharInfo = (props) => {
       .then(onCharLoaded)
   }
 
-  const onCharLoaded = (char) => {
-    setChar(char);
+  const updateComics = () => {
+    getAllComics(undefined, COMICS_AMOUNT).then((comics) => {
+      setAllComics(comics);
+    })
   }
 
-    const skeleton = char || loading || error ? null : <Skeleton/>;
-    const errorMsg = error ? <ErrorMessage/> : null;
-    const spinner = loading ? <Spinner/> : null;
-    const content = !(loading || error || !char) ? <View char={char}/> : null;
+  const getComicsLinks = (charComics, allComics) => {
+    return charComics.map(charComic => {
+      const match = allComics.find(comic => comic.title === charComic);
+      return match ? {id: match.id, title: match.title} : {id: null, title: charComic};
+    });
+  }
 
-    return (
-      <div className="char__info">
-        {skeleton}
-        {errorMsg}
-        {spinner}
-        {content}
-      </div>
-    )
+  const onCharLoaded = (char) => {
+    const comics = getComicsLinks(char.comics, allComics);
+    const updatedChar = {
+      ...char,
+      comics: comics,
+    }
+
+    setChar(updatedChar);
+  }
+
+  const skeleton = char || loading || error ? null : <Skeleton/>;
+  const errorMsg = error ? <ErrorMessage/> : null;
+  const spinner = loading ? <Spinner/> : null;
+  const content = !(loading || error || !char) ? <View char={char}/> : null;
+
+  return (
+    <div className="char__info">
+      {skeleton}
+      {errorMsg}
+      {spinner}
+      {content}
+    </div>
+  )
 }
 
 const View = ({char}) => {
-  const {name, description, thumbnail, homepage, wiki, comics} = char;
-  const limit = 10;
+  const {name, description, thumbnail, comics, homepage, wiki} = char;
 
   const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
     ? {'objectFit': 'contain'}
     : {'objectFit': 'cover'};
+
+  const comicsList = comics.map((comic) => {
+    return comic.id ?
+      <NavLink key={comic.id} className="char__comics-item" to={`/comics/${comic.id}`}>
+        {comic.title}
+      </NavLink> :
+      <li key={comic.id} className="char__comics-item">
+        {comic.title}
+      </li>
+  })
 
   return (
     <>
@@ -73,23 +105,15 @@ const View = ({char}) => {
       </div>
       <div className="char__comics">Comics:</div>
       <ul className="char__comics-list">
-        {comics.length ? null : 'No comics found for this character.'}
-        {
-          comics.slice(0, limit).map((comic, index) => {
-            return (
-              <li key={index} className="char__comics-item">
-                {comic}
-              </li>
-            )
-          })
-        }
+        {comicsList.length === 0 && 'No comics found for this character.'}
+        {comicsList}
       </ul>
     </>
   )
 }
 
-CharInfo.propTypes = {
-  charId: PropTypes.number.isRequired,
-}
+// CharInfo.propTypes = {
+//   charId: PropTypes.number.isRequired,
+// }
 
 export default CharInfo;
