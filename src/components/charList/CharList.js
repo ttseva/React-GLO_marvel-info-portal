@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
 import PropTypes from "prop-types";
 
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -9,6 +10,7 @@ import CharListItem from "../charListItem/CharListItem";
 import './charList.scss';
 
 const CHARS_PER_PAGE = 9;
+
 const CharList = (props) => {
   const [chars, setChars] = useState([]);
   const [newItemLoading, setNewItemLoading] = useState(false);
@@ -37,17 +39,18 @@ const CharList = (props) => {
     setOutOfChars(ended);
   };
 
-  const listChars = chars.map((char) => (
-    <CharListItem
-      char={char}
-      key={char.id}
-      onChoose={() => props.onCharSelected(char.id)}
-      isSelected={props.selectedChar === char.id}/>
-  ));
+  const listChars = <TransitionGroup component={null}>
+    {chars.map((char) => (
+      <CSSTransition key={char.id} timeout={700} classNames="char__item" mountOnEnter>
+        <CharListItem char={char}
+                      onChoose={() => props.onCharSelected(char.id)}
+                      isSelected={props.selectedChar === char.id}/>
+      </CSSTransition>
+    ))}
+  </TransitionGroup>;
 
   const errorMsg = error ? <ErrorMessage/> : null;
   const spinner = loading && !newItemLoading ? <Spinner/> : null;
-  // const content = !(loading || error) ? <ul className="char__grid">{listChars}</ul> : null;
 
   return (
     <div className="char__list">
