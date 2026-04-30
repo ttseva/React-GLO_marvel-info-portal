@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {NavLink} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -14,7 +14,7 @@ const CharInfo = (props) => {
   const [char, setChar] = useState(null);
   const [allComics, setAllComics] = useState([]);
 
-  const {error, loading, getCharacter, getAllComics, clearError} = useMarvelService();
+  const { error, loading, getCharacter, getAllComics, clearError } = useMarvelService();
 
   useEffect(() => {
     updateComics()
@@ -22,7 +22,7 @@ const CharInfo = (props) => {
   }, [props.charId])
 
   const updateChar = () => {
-    const {charId} = props;
+    const { charId } = props;
     if (!charId) return;
     clearError();
     getCharacter(charId)
@@ -38,7 +38,7 @@ const CharInfo = (props) => {
   const getComicsLinks = (charComics, allComics) => {
     return charComics.map(charComic => {
       const match = allComics.find(comic => comic.title === charComic);
-      return match ? {id: match.id, title: match.title} : {id: null, title: charComic};
+      return match ? { id: match.id, title: match.title } : { id: null, title: charComic };
     });
   }
 
@@ -67,12 +67,12 @@ const CharInfo = (props) => {
   )
 }
 
-const View = ({char}) => {
-  const {name, description, thumbnail, comics, homepage, wiki} = char;
+const View = ({ char }) => {
+  const { name, description, thumbnail, comics, homepage, wiki } = char;
 
   const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-    ? {'objectFit': 'contain'}
-    : {'objectFit': 'cover'};
+    ? { 'objectFit': 'contain' }
+    : { 'objectFit': 'cover' };
 
   const comicsList = comics.map((comic) => {
     return comic.id ?
