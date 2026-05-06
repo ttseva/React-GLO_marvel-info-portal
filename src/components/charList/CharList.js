@@ -1,32 +1,46 @@
-import {useEffect, useState} from "react";
-import {CSSTransition, TransitionGroup} from 'react-transition-group';
+import { useEffect, useState } from "react";
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import PropTypes from "prop-types";
 
-import ErrorMessage from "../errorMessage/ErrorMessage";
 import useMarvelService from "../../services/MarvelService";
-import Spinner from "../spinner/Spinner";
 import CharListItem from "../charListItem/CharListItem";
+import Spinner from "../spinner/Spinner";
+import ErrorMessage from "../errorMessage/ErrorMessage";
 
 import './charList.scss';
 
 const CHARS_PER_PAGE = 9;
 
+const setContent = (process, Component, wasLoaded) => {
+  switch (process) {
+    case 'waiting':
+      return <Spinner/>
+    case 'loading':
+      return wasLoaded ? <Spinner/> : <Component/>
+    case 'confirmed':
+      return <Component/>
+    case 'error':
+      return <ErrorMessage/>
+    default:
+      throw new Error(`Unexpected process state`);
+  }
+}
+
 const CharList = (props) => {
   const [chars, setChars] = useState([]);
-  const [newItemLoading, setNewItemLoading] = useState(false);
   const [offset, setOffset] = useState(0);
   const [outOfChars, setOutOfChars] = useState(false);
 
-  const {loading, error, getAllCharacters} = useMarvelService();
+  const { getAllCharacters, process, setProcess } = useMarvelService();
 
   useEffect(() => {
     onRequest(offset, true);
   }, [])
 
-  const onRequest = (offset, initial) => {
-    initial ? setNewItemLoading(false) : setNewItemLoading(true);
+  const onRequest = (offset) => {
     getAllCharacters(offset, CHARS_PER_PAGE + 1)
       .then(onCharListLoaded)
+      .then(() => setProcess('confirmed'))
   }
 
   const onCharListLoaded = (newChars) => {
@@ -34,7 +48,6 @@ const CharList = (props) => {
     if (newChars.length <= CHARS_PER_PAGE) ended = true;
 
     setChars(() => [...chars, ...newChars.slice(0, CHARS_PER_PAGE)]);
-    setNewItemLoading(false);
     setOffset(offset => offset + CHARS_PER_PAGE);
     setOutOfChars(ended);
   };
@@ -49,18 +62,17 @@ const CharList = (props) => {
     ))}
   </TransitionGroup>;
 
-  const errorMsg = error ? <ErrorMessage/> : null;
-  const spinner = loading && !newItemLoading ? <Spinner/> : null;
+  const listGen = (listChars) => {
+    return <ul className="char__grid">{listChars}</ul>
+  }
 
   return (
     <div className="char__list">
-      {errorMsg}
-      {spinner}
-      <ul className="char__grid">{listChars}</ul>
+      {setContent(process, () => listGen(listChars), chars.length === 0)}
       <button
         className="button button__main button__long"
-        disabled={newItemLoading}
-        style={{'display': outOfChars ? 'none' : 'block'}}
+        disabled={process === 'loading'}
+        style={{ 'display': outOfChars ? 'none' : 'block' }}
         onClick={() => onRequest(offset)}>
         <div className="inner">load more</div>
       </button>

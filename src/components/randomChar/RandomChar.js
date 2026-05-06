@@ -1,16 +1,16 @@
-import {useEffect, useState} from "react";
-import ErrorMessage from "../errorMessage/ErrorMessage";
-import Spinner from "../spinner/Spinner";
+import { useEffect, useState } from "react";
+
+import useMarvelService from "../../services/MarvelService";
+import setContent from "../../utils/setContent";
 
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png'
-import useMarvelService from "../../services/MarvelService";
 
 const MAX_CHAR_ID = 20;
 
 const RandomChar = props => {
   const [char, setChar] = useState({});
-  const {loading, error, getCharacter, clearError} = useMarvelService();
+  const { getCharacter, clearError, process, setProcess } = useMarvelService();
 
   useEffect(() => {
     updateChar();
@@ -26,22 +26,17 @@ const RandomChar = props => {
 
     const id = Math.floor(Math.random() * MAX_CHAR_ID) + 2;
     getCharacter(id)
-      .then(onCharLoaded);
+      .then(onCharLoaded)
+      .then(() => setProcess('confirmed'))
   }
 
   const onCharLoaded = (char) => {
     setChar(char)
   }
 
-  const errorMsg = error ? <ErrorMessage/> : null;
-  const spinner = loading ? <Spinner/> : null;
-  const content = !(loading || error) ? <View char={char}/> : null;
-
   return (
     <div className="randomchar">
-      {errorMsg}
-      {spinner}
-      {content}
+      {setContent(process, View, char)}
       <div className="randomchar__static">
         <p className="randomchar__title">
           Random character for today!<br/>
@@ -50,9 +45,11 @@ const RandomChar = props => {
         <p className="randomchar__title">
           Or choose another one
         </p>
-        <button className="button button__main" onClick={() => {
-          updateChar()
-        }}>
+        <button className="button button__main"
+                disabled={process === 'loading'}
+                onClick={() => {
+                  updateChar()
+                }}>
           <div className="inner">try it</div>
         </button>
         <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
@@ -61,12 +58,12 @@ const RandomChar = props => {
   )
 }
 
-const View = ({char}) => {
-  const {name, description, homepage, thumbnail, wiki} = char;
+const View = ({ data }) => {
+  const { name, description, homepage, thumbnail, wiki } = data;
 
   const imgStyle = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-    ? {'objectFit': 'contain'}
-    : {'objectFit': 'cover'};
+    ? { 'objectFit': 'contain' }
+    : { 'objectFit': 'cover' };
 
   const editDescription = (description) => {
     if (!description) return "No description yet...";

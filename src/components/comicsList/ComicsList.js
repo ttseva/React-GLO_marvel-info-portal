@@ -1,7 +1,7 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 import useMarvelService from "../../services/MarvelService";
-import {ComicsListItem} from "../comicsListItem/ComicsListItem";
+import { ComicsListItem } from "../comicsListItem/ComicsListItem";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import Spinner from "../spinner/Spinner";
 
@@ -9,9 +9,24 @@ import './comicsList.scss';
 
 const COMICS_PER_PAGE = 8;
 
+const setContent = (process, Component, wasLoaded) => {
+  switch (process) {
+    case 'waiting':
+      return <Spinner/>
+    case 'loading':
+      return wasLoaded ? <Spinner/> : <Component/>
+    case 'confirmed':
+      return <Component/>
+    case 'error':
+      return <ErrorMessage/>
+    default:
+      throw new Error(`Unexpected process state`);
+  }
+}
+
 const ComicsList = () => {
 
-  const {loading, error, getAllComics} = useMarvelService()
+  const { getAllComics, process, setProcess } = useMarvelService()
   const [offset, setOffset] = useState(0);
   const [comics, setComics] = useState([]);
   const [isEnded, setIsEnded] = useState(false);
@@ -20,6 +35,7 @@ const ComicsList = () => {
   const onRequest = () => {
     getAllComics(offset, 9)
       .then(onNewComics)
+      .then(() => setProcess('confirmed'))
   }
 
   const onNewComics = (newComics) => {
@@ -42,19 +58,13 @@ const ComicsList = () => {
     onRequest()
   }, [])
 
-
-  const errorMsg = error ? <ErrorMessage/> : null;
-  const spinner = loading && comics.length === 0 ? <Spinner/> : null;
-
   return (
     <div className="comics__list">
-      {errorMsg}
-      {spinner}
-      {getNewList()}
+      {setContent(process, () => getNewList(), comics.length === 0)}
       <button className="button button__main button__long"
               onClick={() => onRequest()}
-              style={{visibility: isEnded ? 'hidden' : 'block'}}
-              disabled={loading}>
+              style={{ visibility: isEnded ? 'hidden' : 'block' }}
+              disabled={process === 'loading'}>
         <div className="inner">load more</div>
       </button>
     </div>
